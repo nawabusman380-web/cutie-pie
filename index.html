@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Will You Be My Valentine?</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            touch-action: pan-x pan-y;
+        }
+        
+        /* Mobile-specific adjustments */
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+                padding: 10px;
+                align-items: flex-start;
+            }
+        }
+        
+        .container {
+            text-align: center;
+            padding: 25px 20px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            position: relative;
+            max-width: 600px;
+            width: 95%;
+            margin: 20px auto;
+            border: 8px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+                border-width: 5px;
+            }
+        }
+        
+        h1 {
+            color: #e91e63;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+            line-height: 1.3;
+            padding: 0 10px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 480px) {
+            .buttons {
+                gap: 15px;
+                margin-top: 25px;
+            }
+        }
+        
+        .btn {
+            padding: clamp(14px, 4vw, 18px) clamp(25px, 6vw, 40px);
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-width: 140px;
+            min-height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: manipulation;
+        }
+        
+        @media (max-width: 350px) {
+            .btn {
+                min-width: 120px;
+                min-height: 55px;
+            }
+        }
+        
+        #yesBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        #noBtn {
+            background-color: #f44336;
+            color: white;
+            position: relative;
+        }
+        
+        .btn:hover, .btn:active {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Touch feedback */
+        .btn:active {
+            transform: scale(0.98);
+            transition: transform 0.1s;
+        }
+        
+        #message {
+            margin-top: 30px;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: #e91e63;
+            font-weight: bold;
+            min-height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            padding: 0 10px;
+            line-height: 1.4;
+        }
+        
+        @media (max-width: 480px) {
+            #message {
+                margin-top: 25px;
+                min-height: 50px;
+            }
+        }
+        
+        /* Heart balloons - optimized for mobile */
+        .heart-balloon {
+            position: absolute;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            color: #e91e63;
+            animation: float 15s infinite linear;
+            z-index: 1;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            /* Reduce animation intensity on mobile for performance */
+        }
+        
+        @media (max-width: 768px) {
+            .heart-balloon {
+                animation: floatMobile 20s infinite linear;
+                font-size: clamp(1.2rem, 3vw, 2rem);
+            }
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(100px, 100vh) rotate(90deg);
+            }
+            50% {
+                transform: translate(calc(100vw - 100px), 50vh) rotate(180deg);
+            }
+            75% {
+                transform: translate(50px, 20vh) rotate(270deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(360deg);
+            }
+        }
+        
+        /* Simpler animation for mobile to improve performance */
+        @keyframes floatMobile {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            50% {
+                transform: translate(50px, 80vh) rotate(180deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(360deg);
+            }
+        }
+        
+        .sad-emoji {
+            position: absolute;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            z-index: 5;
+            animation: fadeOut 2s forwards;
+            pointer-events: none;
+        }
+        
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .heart-decoration {
+            position: absolute;
+            color: rgba(233, 30, 99, 0.3);
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        footer {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            z-index: 10;
+            padding: 0 10px;
+        }
+        
+        @media (max-height: 700px) {
+            footer {
+                position: relative;
+                margin-top: 20px;
+                bottom: auto;
+            }
+        }
+        
+        /* Mobile landscape orientation */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                align-items: flex-start;
+                padding-top: 10px;
+            }
+            
+            .container {
+                margin-top: 10px;
+                max-width: 90%;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+                margin-bottom: 15px;
+            }
+            
+            .buttons {
+                margin-top: 15px;
+            }
+            
+            footer {
+                position: fixed;
+                bottom: 5px;
+            }
+        }
+        
+        /* Prevent text selection on buttons */
+        .noselect {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        /* Swipe protection for no button on mobile */
+        .no-btn-protection {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Loading indicator for slower devices */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 175, 189, 0.9);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .loading i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: spin 2s infinite linear;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading screen for mobile -->
+    <div class="loading" id="loading">
+        <i class="fas fa-heart"></i>
+        <p>Loading the love...</p>
+    </div>
+    
+    <!-- Heart balloons -->
+    <div id="balloons-container"></div>
+    
+    <!-- Main content -->
+    <div class="container">
+        <h1>Will You Be My Valentine? 💖</h1>
+        
+        <div class="buttons">
+            <button class="btn noselect" id="yesBtn">YES! 😍</button>
+            <button class="btn noselect no-btn-protection" id="noBtn">NO 😢</button>
+        </div>
+        
+        <div id="message"></div>
+    </div>
+    
+    <footer class="noselect">
+        Made with <i class="fas fa-heart" style="color: #e91e63;"></i> for you
+    </footer>
+
+    <script>
+        // Show loading screen on mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'flex';
+            
+            // Hide loading screen after a short delay
+            setTimeout(() => {
+                loading.style.display = 'none';
+            }, 800);
+        });
+        
+        // Adjust for mobile viewport height
+        function setVH() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        
+        setVH();
+        window.addEventListener('resize', setVH);
+        window.addEventListener('orientationchange', setVH);
+        
+        // Create heart balloons - fewer on mobile for better performance
+        const balloonContainer = document.getElementById('balloons-container');
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const balloonCount = isMobile ? 8 : 15;
+        
+        for (let i = 0; i < balloonCount; i++) {
+            setTimeout(() => {
+                createBalloon(i);
+            }, i * 200); // Stagger creation for better performance
+        }
+        
+        function createBalloon(index) {
+            const balloon = document.createElement('div');
+            balloon.classList.add('heart-balloon');
+            balloon.innerHTML = '❤️';
+            
+            // Randomize starting position and animation
+            const startX = Math.random() * window.innerWidth;
+            const startY = Math.random() * window.innerHeight;
+            const duration = isMobile ? 20 + Math.random() * 25 : 15 + Math.random() * 20;
+            const delay = Math.random() * 5;
+            
+            balloon.style.left = `${startX}px`;
+            balloon.style.top = `${startY}px`;
+            balloon.style.animation = `float ${duration}s infinite linear ${delay}s`;
+            balloon.style.fontSize = `${(isMobile ? 1.2 : 1.5) + Math.random() * (isMobile ? 2 : 3)}rem`;
+            balloon.style.opacity = `${0.7 + Math.random() * 0.3}`;
+            
+            balloonContainer.appendChild(balloon);
+        }
+        
+        // Create background heart decorations - fewer on mobile
+        const heartDecorationCount = isMobile ? 15 : 30;
+        
+        for (let i = 0; i < heartDecorationCount; i++) {
+            setTimeout(() => {
+                createDecoration(i);
+            }, i * 50);
+        }
+        
+        function createDecoration(index) {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-decoration');
+            heart.innerHTML = '❤️';
+            
+            const posX = Math.random() * 100;
+            const posY = Math.random() * 100;
+            
+            heart.style.left = `${posX}vw`;
+            heart.style.top = `${posY}vh`;
+            heart.style.fontSize = `${(isMobile ? 0.8 : 1) + Math.random() * (isMobile ? 1.2 : 1.5)}rem`;
+            heart.style.opacity = `${0.1 + Math.random() * 0.3}`;
+            
+            document.body.appendChild(heart);
+        }
+        
+        // Button interactions - optimized for touch
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const message = document.getElementById('message');
+        let noClicks = 0;
+        let yesClicked = false;
+        
+        // Touch event handlers for mobile
+        function addButtonTouchEvents(button) {
+            button.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.95)';
+            }, {passive: false});
+            
+            button.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                this.style.transform = '';
+            }, {passive: false});
+        }
+        
+        addButtonTouchEvents(yesBtn);
+        addButtonTouchEvents(noBtn);
+        
+        // Yes button functionality
+        function handleYesClick() {
+            if (yesClicked) return;
+            yesClicked = true;
+            
+            // Show the romantic message
+            message.innerHTML = "I knew you would say YES! 😍 You are the love of my life! 💖";
+            message.style.opacity = "1";
+            
+            // Add celebration effect
+            yesBtn.classList.add('pulse');
+            yesBtn.innerHTML = "YAY! 💖";
+            yesBtn.style.backgroundColor = "#e91e63";
+            yesBtn.style.transform = "scale(1.1)";
+            
+            // Create floating hearts celebration - fewer on mobile
+            const celebrationCount = isMobile ? 12 : 20;
+            for (let i = 0; i < celebrationCount; i++) {
+                setTimeout(() => {
+                    createCelebrationHeart();
+                }, i * 100);
+            }
+            
+            // Play a sound (optional)
+            playCelebrationSound();
+            
+            // Vibrate on mobile if supported
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100]);
+            }
+        }
+        
+        yesBtn.addEventListener('click', handleYesClick);
+        yesBtn.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            handleYesClick();
+        }, {passive: false});
+        
+        // No button functionality
+        function handleNoClick(e) {
+            if (yesClicked) return;
+            
+            noClicks++;
+            
+            // Get touch or click coordinates
+            let clientX, clientY;
+            if (e.type.includes('touch')) {
+                clientX = e.touches[0] ? e.touches[0].clientX : e.changedTouches[0].clientX;
+                clientY = e.touches[0] ? e.touches[0].clientY : e.changedTouches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            // Create sad emoji
+            createSadEmoji(clientX, clientY);
+            
+            // Move the no button to a random position
+            const maxX = window.innerWidth - noBtn.offsetWidth - 30;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 30;
+            const randomX = Math.max(15, Math.random() * maxX);
+            const randomY = Math.max(15, Math.random() * maxY);
+            
+            noBtn.style.position = "fixed";
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+            
+            // Change button text based on number of clicks
+            const sadTexts = [
+                "NO 😢", 
+                "Are you sure? 😔", 
+                "Really? 😭", 
+                "Think again! 💔", 
+                "Please? 🥺", 
+                "I'll be sad... 😞",
+                "Last chance! 😟",
+                "Pretty please? 🙏"
+            ];
+            
+            const sadIndex = Math.min(noClicks - 1, sadTexts.length - 1);
+            noBtn.innerHTML = sadTexts[sadIndex];
+            
+            // Make the button smaller with each click
+            const scale = Math.max(0.5, 1 - (noClicks * 0.05));
+            noBtn.style.transform = `scale(${scale})`;
+            
+            // Show message encouraging to click yes
+            if (noClicks >= 3) {
+                message.innerHTML = "The YES button is waiting for you! 💖";
+                message.style.opacity = "1";
+                
+                // Make the yes button pulse to attract attention
+                yesBtn.classList.add('pulse');
+            }
+            
+            // Vibrate on mobile if supported
+            if (navigator.vibrate && noClicks <= 3) {
+                navigator.vibrate(50);
+            }
+            
+            // After many clicks, make yes button follow touch
+            if (noClicks >= 5) {
+                document.addEventListener('touchmove', followTouch);
+                document.addEventListener('mousemove', followMouse);
+            }
+        }
+        
+        noBtn.addEventListener('click', handleNoClick);
+        noBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            handleNoClick(e);
+        }, {passive: false});
+        
+        // Create sad emoji at click/touch position
+        function createSadEmoji(x, y) {
+            const emoji = document.createElement('div');
+            emoji.classList.add('sad-emoji');
+            emoji.innerHTML = '😢';
+            emoji.style.left = `${x}px`;
+            emoji.style.top = `${y}px`;
+            
+            document.body.appendChild(emoji);
+            
+            // Remove emoji after animation completes
+            setTimeout(() => {
+                if (emoji.parentNode) {
+                    emoji.parentNode.removeChild(emoji);
+                }
+            }, 2000);
+        }
+        
+        // Create celebration hearts
+        function createCelebrationHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-balloon');
+            heart.innerHTML = '❤️';
+            heart.style.color = '#e91e63';
+            
+            const startX = Math.random() * window.innerWidth;
+            const startY = window.innerHeight + 50;
+            
+            heart.style.left = `${startX}px`;
+            heart.style.top = `${startY}px`;
+            heart.style.animation = `float ${5 + Math.random() * 5}s infinite linear`;
+            heart.style.fontSize = `${1.5 + Math.random() * 2}rem`;
+            heart.style.zIndex = '20';
+            
+            document.body.appendChild(heart);
+            
+            // Remove some hearts after a while to prevent too many elements
+            setTimeout(() => {
+                if (heart.parentNode) {
+                    heart.parentNode.removeChild(heart);
+                }
+            }, 10000);
+        }
+        
+        // Celebration sound effect
+        function playCelebrationSound() {
+            try {
+                // Create audio context for sound
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create a simple celebration sound
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log("Audio not supported in this browser");
+            }
+        }
+        
+        // Make the yes button follow cursor/touch after multiple no clicks
+        function followMouse(e) {
+            if (noClicks >= 5 && !yesClicked) {
+                const x = e.clientX;
+                const y = e.clientY;
+                
+                yesBtn.style.position = "fixed";
+                yesBtn.style.left = `${x - yesBtn.offsetWidth/2}px`;
+                yesBtn.style.top = `${y - yesBtn.offsetHeight/2}px`;
+            }
+        }
+        
+        function followTouch(e) {
+            if (noClicks >= 5 && !yesClicked && e.touches && e.touches[0]) {
+                const x = e.touches[0].clientX;
+                const y = e.touches[0].clientY;
+                
+                yesBtn.style.position = "fixed";
+                yesBtn.style.left = `${x - yesBtn.offsetWidth/2}px`;
+                yesBtn.style.top = `${y - yesBtn.offsetHeight/2}px`;
+            }
+        }
+        
+        // Clean up event listeners when yes is clicked
+        function cleanupEventListeners() {
+            document.removeEventListener('touchmove', followTouch);
+            document.removeEventListener('mousemove', followMouse);
+        }
+        
+        // Update yes button click to cleanup
+        const originalHandleYesClick = handleYesClick;
+        handleYesClick = function() {
+            cleanupEventListeners();
+            originalHandleYesClick();
+        };
+        
+        // Handle orientation change
+        window.addEventListener('orientationchange', function() {
+            // Refresh balloon positions
+            const balloons = document.querySelectorAll('.heart-balloon');
+            balloons.forEach(balloon => {
+                balloon.style.left = `${Math.random() * window.innerWidth}px`;
+                balloon.style.top = `${Math.random() * window.innerHeight}px`;
+            });
+            
+            // Reposition the no button if it's floating
+            if (noBtn.style.position === 'fixed') {
+                const maxX = window.innerWidth - noBtn.offsetWidth - 30;
+                const maxY = window.innerHeight - noBtn.offsetHeight - 30;
+                const randomX = Math.max(15, Math.random() * maxX);
+                const randomY = Math.max(15, Math.random() * maxY);
+                
+                noBtn.style.left = `${randomX}px`;
+                noBtn.style.top = `${randomY}px`;
+            }
+        });
+    </script>
+</body>
+</html>
